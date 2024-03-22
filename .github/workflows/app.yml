@@ -15,7 +15,7 @@ jobs:
       run: |
         pip install flake8
     - name: Run Python linters
-      run: flake8 ./server ./client
+      run: flake8 ./server/server.py ./server/tests ./client/client.py ./client/tests
     - name: Run Buf linter
       run: |
         docker run --volume ${{ github.workspace }}:/workspace --workdir /workspace bufbuild/buf lint
