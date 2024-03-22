@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+    client:
+        build:
+            context: .
+            dockerfile: client/docker/Dockerfile
+        environment:
+            SERVER_HOST: server
+        depends_on:
+            - server
+        image: client
+        networks:
+            - microservices
+
+
+    server:
+        build:
+            context: .
+            dockerfile: server/docker/Dockerfile
+        image: server
+        networks:
+            - microservices
+
+networks:
+    microservices:

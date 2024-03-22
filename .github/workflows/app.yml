@@ -1,20 +1,51 @@
-name: Python application
+name: CI
 
 on: push
 
-permissions:
-  contents: read
-
 jobs:
-  build:
+  style_checks:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install Python dependencies
+      run: |
+        pip install flake8
+    - name: Run Python linters
+      run: flake8 ./server ./client
+    - name: Run Buf linter
+      run: |
+        docker run --volume ${{ github.workspace }}:/workspace --workdir /workspace bufbuild/buf lint
 
-      - name: Build docker image
-        run: docker build -t tink-ab-hw8 .
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+      - name: Run server tests
+        run: pytest ./server/tests
+      - name: Run client tests
+        run: pytest ./client/tests
 
-      - name: Run tests
-        run: docker run -t tink-ab-hw8 pytest
+  test-interaction:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run containers
+        run: docker compose up -d
+      - name: Fetch logs
+        if: always()
+        run: docker-compose logs
+      - name: Stop and remove containers
+        if: always()
+        run: docker-compose down

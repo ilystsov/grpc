@@ -1,0 +1,5 @@
+grpcio-tools ~= 1.30
+grpcio
+grpc-interceptor ~= 0.15.4
+pytest
+pytest-grpc

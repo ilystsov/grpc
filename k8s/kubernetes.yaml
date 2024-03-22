@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: client
+    labels:
+        app: client
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: client
+    template:
+        metadata:
+            labels:
+                app: client
+        spec:
+            containers:
+                - name: client
+                  image: client:latest
+                  command: ["sh", "-c", "python client.py; sleep infinity"]
+                  imagePullPolicy: Never
+                  env:
+                      - name: SERVER_HOST
+                        value: server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: server
+    labels:
+        app: server
+spec:
+    replicas: 3
+    selector:
+        matchLabels:
+            app: server
+    template:
+        metadata:
+            labels:
+                app: server
+        spec:
+            containers:
+                - name: server
+                  image: server:latest
+                  imagePullPolicy: Never
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: server
+spec:
+    selector:
+        app: server
+    ports:
+        - protocol: TCP
+          port: 50051
+          targetPort: 50051
+

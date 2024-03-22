@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+enum GreetingStyle {
+  FORMAL = 0;
+  INFORMAL = 1;
+}
+
+message GreetingRequest {
+  string name = 1;
+  GreetingStyle style = 2;
+}
+
+message GreetingResponse {
+  string greeting_message = 1;
+}
+
+message SumRequest {
+  int32 first_number = 1;
+  int32 second_number = 2;
+}
+
+message SumResponse {
+  int64 result = 1;
+}
+
+service GreetingAndSum {
+  rpc GreetPerson (GreetingRequest) returns (GreetingResponse);
+  rpc AddTwoNumbers (SumRequest) returns (SumResponse);
+}
